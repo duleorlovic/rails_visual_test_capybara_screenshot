@@ -7,7 +7,7 @@ Test you web page using screenshots so you can detect visual changes.
 On rails app add rspec and generate scaffold articles
 
 ```
-bundle add rspec-rails
+bundle add rspec-rails --group "development, test"
 rails generate rspec:install
 git add . && git commit -m'rails generate rspec:install'
 
@@ -38,16 +38,33 @@ group :test do
   gem "webdrivers"
 end
 ```
-create some system test
+create some system test and configure to work in headless_chrome
+```
+# spec/support/capybara_selenium.rb
+# https://github.com/duleorlovic/rails_capybara_selenium/blob/main/spec/support/capybara_selenium.rb
+RSpec.configure do |config|
+  config.before :each, type: :system do
+    if ENV["USE_HEADFULL_CHROME"].present?
+      # Use chrome only on local machine since CI will fail
+      # export USE_HEADFULL_CHROME=true
+      # rails test:system
+      # unset USE_HEADFULL_CHROME
+      driven_by :selenium, using: :chrome, screen_size: [1400, 1400]
+    else
+      # driven_by :selenium_chrome_headless
+      driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400]
+    end
+  end
+end
+```
+
+so we can run
+
 ```
 # rspec/system/articles_spec.rb
 require 'rails_helper'
 
 RSpec.describe "Articles", type: :system do
-  before do
-    driven_by(:selenium)
-  end
-
   it "see articles page" do
     visit articles_path
     expect(page.body).to include  "Articles"
@@ -55,7 +72,7 @@ RSpec.describe "Articles", type: :system do
 end
 ```
 
-and run
+in both headless and headfull mode
 
 ```
 rspec spec/system/articles_spec.rb
@@ -98,8 +115,8 @@ git commit -am'Add screenshot test'
 git push
 ```
 
-Note that we need to mark js: true and use fixtures (so the content does not
-change)
+Test will fail if there are some visual differences.
+On CI you can download artifacts
 
 ## Similar
 

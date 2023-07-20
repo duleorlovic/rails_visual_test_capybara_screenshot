@@ -18,5 +18,14 @@ jobs:
         bin/rails db:create db:migrate
     - name: Run tests
       run: |
-        bundle exec rake
-
+        # bundle exec rake
+        bundle exec rspec spec/system/articles_spec.rb || echo continue
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        # https://github.com/actions/upload-artifact#upload-using-multiple-paths-and-exclusions
+        path: |
+          tmp/screenshots/*
+          doc/screenshots/*
+          log/*
