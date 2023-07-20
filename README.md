@@ -77,7 +77,25 @@ end
 
 and adding a line
 ```
+# rspec/system/articles_spec.rb
+  include Capybara::Screenshot::Diff
 
+    screenshot "articles_page"
+```
+
+so now when you run the test it will generate file since it does not exists
+
+```
+rspec spec/system/articles_spec.rb
+1 example, 0 failures
+# doc/screenshots/articles_page.png is generated
+```
+
+so you can commit and push
+```
+git add .
+git commit -am'Add screenshot test'
+git push
 ```
 
 Note that we need to mark js: true and use fixtures (so the content does not

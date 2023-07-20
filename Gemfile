@@ -69,6 +69,9 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "webdrivers"
+
+  gem 'capybara-screenshot-diff'
+  gem 'oily_png', platform: :ruby
 end
 
 gem "rspec-rails", "~> 6.0"
