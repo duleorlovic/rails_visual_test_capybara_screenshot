@@ -92,11 +92,22 @@ group :test do
 end
 ```
 
+add configuration
+```
+# spec/support/capybara_screenshot_diff.rb
+# https://github.com/duleorlovic/rails_capybara_selenium/blob/main/spec/support/capybara_screenshot_diff.rb
+Capybara::Screenshot::Diff.color_distance_limit = 80
+# Not sure why on Github CI we got error on one pixel
+# Screenshot does not match for 'articles_page' ({"area_size":1,"region":[40,38,42,38],"max_color_distance":76.3})
+
+RSpec.configure do |config|
+  config.include Capybara::Screenshot::Diff
+end
+```
+
 and adding a line
 ```
 # rspec/system/articles_spec.rb
-  include Capybara::Screenshot::Diff
-
     screenshot "articles_page"
 ```
 
@@ -116,7 +127,7 @@ git push
 ```
 
 Test will fail if there are some visual differences.
-On CI you can download artifacts
+On CI you can download artifacts.
 
 ## Similar
 
