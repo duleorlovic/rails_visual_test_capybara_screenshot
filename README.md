@@ -2,7 +2,7 @@
 
 Test you web page using screenshots so you can detect visual changes.
 
-## Prepare
+## Install rspec
 
 On rails app add rspec and generate scaffold articles
 
@@ -20,18 +20,64 @@ sed -i -e '/end/i\
 git add . && git commit -m'rails g scaffold articles title body:text'
 ```
 
-we can run test
+check if you can run tests successfully
 ```
 rspec
+Finished in 0.20697 seconds (files took 1.23 seconds to load)
+27 examples, 0 failures, 14 pending
 ```
 
-Also we need to add webdrivers and capybara so we can write system test.
+## Capybara system test
 
-Now we can play with screenshots
+To run system test we need capybara and webdrivers which is included by default
+in rails Gemfile. If they are not present, add them
+```
+# Gemfile
+group :test do
+  gem "capybara"
+  gem "webdrivers"
+end
+```
+create some system test
+```
+# rspec/system/articles_spec.rb
+require 'rails_helper'
+
+RSpec.describe "Articles", type: :system do
+  before do
+    driven_by(:selenium)
+  end
+
+  it "see articles page" do
+    visit articles_path
+    expect(page.body).to include  "Articles"
+  end
+end
+```
+
+and run
 
 ```
-gem 'capybara-screenshot-diff'
-gem 'oily_png', platform: :ruby
+rspec spec/system/articles_spec.rb
+```
+
+For error `Webdrivers::VersionError:` please look at
+https://github.com/duleorlovic/rails_capybara_selenium#chrome-version
+
+## Visual test
+
+Now we can play with screenshots by adding to Gemfile
+
+```
+group :test do
+  gem 'capybara-screenshot-diff'
+  gem 'oily_png', platform: :ruby
+end
+```
+
+and adding a line
+```
+
 ```
 
 Note that we need to mark js: true and use fixtures (so the content does not
